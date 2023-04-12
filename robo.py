@@ -64,9 +64,12 @@ def enviar():
         "Opção 3 - texto completo"}
         opcao = combo_texto.get()  
         texto = urllib.parse.quote(opcoes_texto[opcao]) 
+        numeros_enviados = []
         for telefone in telefones: 
-            if telefone.strip():
+            if telefone.strip() and telefone not in numeros_enviados:
                 enviar_mensagem(telefone, texto)
+                numeros_enviados.append(telefone)
+
 
 janela = ThemedTk(theme='arc')
 janela.geometry("400x300")
