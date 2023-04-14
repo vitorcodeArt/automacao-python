@@ -1,5 +1,5 @@
 ('/home/vitor/Minha Pasta/Projetos/automação-py/dist/robo',
- False,
+ True,
  False,
  False,
  None,
@@ -9948,7 +9948,7 @@
  [],
  False,
  False,
- 1681314761,
+ 1681332943,
  [('run',
    '/home/vitor/.local/lib/python3.10/site-packages/PyInstaller/bootloader/Linux-64bit-intel/run',
    'EXECUTABLE')])

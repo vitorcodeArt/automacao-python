@@ -13,6 +13,7 @@ import pandas as pd
 
 contatos_df = pd.DataFrame()
 
+
 navegador = webdriver.Chrome()
 navegador.get("https://web.whatsapp.com/")
 
@@ -50,18 +51,19 @@ def enviar():
         endereco = contatos_df.loc[i, "Endereço"]
         numero = contatos_df.loc[i, "Número"]
         complemento = str(contatos_df.loc[i, "Complemento"])
+        ocorrencia = contatos_df.loc[i, "ULTIMO MOTIVO/OCORRENCIA"]
         if complemento == 'nan':
             complemento = ''
         os = contatos_df.loc[i, "BA"]
         telefones = str(contatos_df.loc[i, "Telefone"]).split(";") # separa os números de telefone por ";" em uma lista
         cep = contatos_df.loc[i, "Cep"]
         opcoes_texto = {
-    "Mensagem - Notas Novas": 
+    "Notas Novas": 
         f"Recentemente recebemos o cancelamento de serviços da Vivo. Por isso, precisamos agendar a coleta dos equipamentos Vivo que você não utiliza mais. Para isso, precisamos que você confirme algumas informações:\n\n •  *{cliente}*\n •  *{endereco}, {numero} -{ complemento}*\n •  *CEP: {cep}*\n\nA retirada sempre acontece em horário comercial. Deixamos marcado a retirada dos seus equipamentos para *{data}* (desde que seja feita a confirmação).\n\nSomente maiores de 18 anos poderão realizar esse procedimento, ok? Então caso não tenha ninguém para fazer a entrega dos equipamentos para a nossa equipe, pedimos que você nos responda com a melhor data/horário.\n\nPara sua segurança, você pode confirmar se realmente é a nossa equipe que irá fazer a retirada, conferindo o nº da sua coleta: *{os}*.\n\n*Importante:* Como nossa equipe não está autorizada a entrar na sua residência, pedimos que você já deixe os equipamentos e acessórios (ex: fonte, controle e cabos) em uma sacola ou em uma caixa.\n\nO serviço de coleta é totalmente gratuito e é realizado em parceria com LOCALTEC, que é nosso fornecedor autorizado.\n\nSe quiser mais informações, acesse: www.vivo.com.br/devolverequipamento \nSegue telefone para contato: (11) 3949-7557. \nAté breve,\n\nEquipe Vivo",
-    "Mensagem - Cliente Ausente": 
-        "Opção 2 - texto completo",
-    "Mensagem - Confirmar Agendamento": 
-        "Opção 3 - texto completo"}
+    "Cliente AUSENTE/MUDOU-SE": 
+        f"Olá *{cliente}*\nOS: *{os}*\nEndereço: *{endereco}, {numero} /{ complemento}*\nNosso técnico foi ao local para a coleta dos equipamentos da Vivo e em laudo constou *{ocorrencia}* seria possível Agendar a coleta para dia *{data}*? Caso preferir podemos alterar o endereço da coleta!\n(Informe CEP, NÚMERO DO LOCAL, E COMPLEMENTOS)\n\nEstamos a disposição!\n\nAgradecemos a atenção, aguardamos um retorno",
+    "Agendamento LOCALTEC": 
+        f"Olá:*{cliente}*\nOS:*{os}*\nRecebemos um agendamento para retirada dos aparelhos da VIVO para o dia *{data}*, podemos confirmar?\nCaso seja apartamento, pode deixar na portaria se preferir.\nMe confirme o endereço por favor:*{endereco}, {numero} / {complemento}*\n*CEP:{cep}*\nPode ser retirado em horário comercial das 8h as 18h?\nAtenciosamente,\nLocaltec."}
         opcao = combo_texto.get()  
         texto = urllib.parse.quote(opcoes_texto[opcao]) 
         numeros_enviados = []
@@ -88,23 +90,24 @@ def abrir_arquivo():
         rotulo_arquivo.configure(text=f"Arquivo selecionado: {nome_arquivo}")
 
 # adiciona um botão para selecionar o arquivo
-botao_arquivo = tk.Button(janela, text="Selecionar arquivo", command=abrir_arquivo)
-botao_arquivo.pack(pady=10)
 
-# adiciona um rótulo para mostrar o nome do arquivo selecionado
-rotulo_arquivo = tk.Label(janela, text="Nenhum arquivo selecionado")
-rotulo_arquivo.pack(pady=5)
 
-opcoes = ["Mensagem - Notas Novas", 
-          "Mensagem - Cliente Ausente",
-          "Mensagem - Confirmar Agendamento"]
+opcoes = ["Notas Novas", 
+          "Cliente AUSENTE/MUDOU-SE",
+          "Agendamento LOCALTEC"
+          ]
 
 combo_texto = ttk.Combobox(frame_central, values=opcoes)
 combo_texto.current(0)  # define a opção padrão como a primeira da lista
 combo_texto.pack(padx=10, pady=10)
 
 
+botao_arquivo = tk.Button(frame_central, text="Selecionar arquivo", command=abrir_arquivo)
+botao_arquivo.pack(pady=10)
 
+# adiciona um rótulo para mostrar o nome do arquivo selecionado
+rotulo_arquivo = tk.Label(frame_central, text="Nenhum arquivo selecionado")
+rotulo_arquivo.pack(pady=5)
 
 rotulo_data = tk.Label(frame_central, text="Data (dia/mês):")
 rotulo_data.configure(highlightthickness='0', foreground='#fff', background='#4DB79F')
@@ -116,7 +119,11 @@ entrada_data.pack(padx=10, pady=10)
 
 botao_enviar = tk.Button(frame_central, text="Enviar Mensagens", command=enviar)
 botao_enviar.configure(background='#4DB79F', foreground='#fff')
-botao_enviar.pack(pady=10)
+botao_enviar.pack(pady=10) 
+
+paragrafo = tk.Label(janela, text="5% dos agendamentos feitos deverão ir para o Vitor", anchor="se")
+paragrafo.pack(side="bottom", padx=10, pady=10)
+paragrafo.configure(foreground="#000", background="#fff", font=('Arial', 4))
 
 # centralizando o frame
 janela.eval('tk::PlaceWindow %s center' % janela.winfo_toplevel())
